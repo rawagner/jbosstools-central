@@ -15,8 +15,8 @@ import java.util.List;
 import org.jboss.reddeer.jface.wizard.WizardPage;
 import org.jboss.reddeer.swt.api.Tree;
 import org.jboss.reddeer.swt.api.TreeItem;
-import org.jboss.reddeer.core.condition.JobIsRunning;
-import org.jboss.reddeer.core.condition.ShellWithTextIsActive;
+import org.jboss.reddeer.swt.condition.ShellIsActive;
+import org.jboss.reddeer.workbench.core.condition.JobIsRunning;
 import org.jboss.reddeer.common.condition.AbstractWaitCondition;
 import org.jboss.reddeer.swt.impl.button.PushButton;
 import org.jboss.reddeer.swt.impl.combo.LabeledCombo;
@@ -41,7 +41,7 @@ public class MavenImportWizardFirstPage extends WizardPage{
 	public void importProject(String path, boolean cheatsheet){
 		setRootDirectory(path);
 		new PushButton("Finish").click();
-		new WaitWhile(new ShellWithTextIsActive("Import Maven Projects"),TimePeriod.NORMAL);
+		new WaitWhile(new ShellIsActive("Import Maven Projects"),TimePeriod.DEFAULT);
 		if(cheatsheet){
 			try{
 				new DefaultShell("Found cheatsheet");

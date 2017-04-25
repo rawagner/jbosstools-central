@@ -23,7 +23,6 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.jboss.ide.eclipse.as.reddeer.server.view.JBossServerModule;
-import org.jboss.ide.eclipse.as.reddeer.server.view.JBossServerView;
 import org.jboss.reddeer.common.condition.AbstractWaitCondition;
 import org.jboss.reddeer.common.exception.WaitTimeoutExpiredException;
 import org.jboss.reddeer.common.logging.Logger;
@@ -31,20 +30,23 @@ import org.jboss.reddeer.common.matcher.RegexMatcher;
 import org.jboss.reddeer.common.wait.TimePeriod;
 import org.jboss.reddeer.common.wait.WaitUntil;
 import org.jboss.reddeer.common.wait.WaitWhile;
-import org.jboss.reddeer.core.condition.JobIsRunning;
-import org.jboss.reddeer.core.condition.ShellWithTextIsActive;
+import org.jboss.reddeer.workbench.core.condition.JobIsRunning;
+import org.jboss.reddeer.core.handler.TreeItemHandler;
 import org.jboss.reddeer.core.handler.WidgetHandler;
 import org.jboss.reddeer.eclipse.condition.ConsoleHasNoChange;
 import org.jboss.reddeer.eclipse.exception.EclipseLayerException;
 import org.jboss.reddeer.eclipse.ui.browser.BrowserEditor;
 import org.jboss.reddeer.eclipse.ui.console.ConsoleView;
 import org.jboss.reddeer.eclipse.ui.problems.Problem;
-import org.jboss.reddeer.eclipse.ui.problems.ProblemsView;
-import org.jboss.reddeer.eclipse.ui.problems.ProblemsView.ProblemType;
-import org.jboss.reddeer.eclipse.wst.server.ui.view.ServersViewEnums.ServerPublishState;
-import org.jboss.reddeer.eclipse.wst.server.ui.view.ServersViewEnums.ServerState;
+import org.jboss.reddeer.eclipse.ui.views.markers.ProblemsView;
+import org.jboss.reddeer.eclipse.ui.views.markers.ProblemsView.ProblemType;
+import org.jboss.reddeer.eclipse.wst.server.ui.cnf.ServerModule;
+import org.jboss.reddeer.eclipse.wst.server.ui.cnf.ServersView2;
+import org.jboss.reddeer.eclipse.wst.server.ui.cnf.ServersViewEnums.ServerPublishState;
+import org.jboss.reddeer.eclipse.wst.server.ui.cnf.ServersViewEnums.ServerState;
 import org.jboss.reddeer.eclipse.wst.server.ui.wizard.ModifyModulesDialog;
 import org.jboss.reddeer.eclipse.wst.server.ui.wizard.ModifyModulesPage;
+import org.jboss.reddeer.swt.condition.ShellIsActive;
 import org.jboss.reddeer.swt.impl.link.DefaultLink;
 import org.jboss.reddeer.swt.impl.tree.DefaultTreeItem;
 import org.jboss.reddeer.workbench.impl.editor.DefaultEditor;
@@ -91,7 +93,7 @@ public class ExamplesOperator {
 	 */
 
 	public void deployProject(String projectName, String serverName) {
-		JBossServerView serversView = new JBossServerView();
+		ServersView2 serversView = new ServersView2();
 		serversView.open();
 		ModifyModulesDialog modulesDialog = serversView.getServer(serverName).addAndRemoveModules();
 		String moduleName = new DefaultTreeItem(new TreeItemTextMatcher(new RegexMatcher(".*" + projectName + ".*")))
@@ -156,7 +158,7 @@ public class ExamplesOperator {
 			dialog.finish(project.getProjectName());
 		} catch (WaitTimeoutExpiredException ex) { // waiting in dialog.finish()
 													// is not enough!
-			new WaitWhile(new ShellWithTextIsActive("New Project Example"), TimePeriod.VERY_LONG);
+			new WaitWhile(new ShellIsActive("New Project Example"), TimePeriod.VERY_LONG);
 			new WaitWhile(new JobIsRunning(), TimePeriod.LONG);
 		}
 		checkForErrors();
@@ -173,7 +175,7 @@ public class ExamplesOperator {
 		if (!projectName.equals("jboss-ejb-timer")) {
 			new WaitUntil(new ConsoleHasNoChange(), TimePeriod.LONG);
 		}
-		JBossServerView serversView = new JBossServerView();
+		ServersView2 serversView = new ServersView2();
 		serversView.open();
 		JBossServerModule module = (JBossServerModule) serversView.getServer(serverNameLabel)
 				.getModule(new RegexMatcher(".*" + projectName + ".*"));
@@ -272,7 +274,7 @@ public class ExamplesOperator {
 
 		String projectName;
 		String serverName;
-		JBossServerModule module = null;
+		ServerModule module = null;
 
 		public WaitForProjectToStartAndSynchronize(String projectName, String serverName) {
 			this.projectName = projectName;
@@ -292,10 +294,10 @@ public class ExamplesOperator {
 					+ getModule().getLabel().getPublishState();
 		}
 
-		private JBossServerModule getModule() {
+		private ServerModule getModule() {
 			int counter = 0;
 			while (module == null && counter < 5) {
-				JBossServerView serversView = new JBossServerView();
+				ServersView2 serversView = new ServersView2();
 				serversView.open();
 				try {
 					module = serversView.getServer(serverName).getModule(projectName);
@@ -341,7 +343,7 @@ public class ExamplesOperator {
 
 		@Override
 		protected boolean matchesSafely(TreeItem item) {
-			return matcher.matches(WidgetHandler.getInstance().getText(item));
+			return matcher.matches(TreeItemHandler.getInstance().getText(item));
 		}
 
 	}

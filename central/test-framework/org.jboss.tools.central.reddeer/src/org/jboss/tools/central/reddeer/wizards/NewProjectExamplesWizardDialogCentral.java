@@ -19,12 +19,12 @@ import java.util.List;
 import org.eclipse.swt.SWT;
 import org.jboss.reddeer.jface.wizard.WizardDialog;
 import org.jboss.reddeer.swt.api.Button;
-import org.jboss.reddeer.core.condition.JobIsRunning;
-import org.jboss.reddeer.core.condition.ShellWithTextIsActive;
+import org.jboss.reddeer.swt.condition.ShellIsActive;
+import org.jboss.reddeer.workbench.core.condition.JobIsRunning;
 import org.jboss.reddeer.core.handler.WidgetHandler;
 import org.jboss.reddeer.eclipse.ui.problems.Problem;
-import org.jboss.reddeer.eclipse.ui.problems.ProblemsView;
-import org.jboss.reddeer.eclipse.ui.problems.ProblemsView.ProblemType;
+import org.jboss.reddeer.eclipse.ui.views.markers.ProblemsView;
+import org.jboss.reddeer.eclipse.ui.views.markers.ProblemsView.ProblemType;
 import org.jboss.reddeer.swt.impl.button.CheckBox;
 import org.jboss.reddeer.swt.impl.button.FinishButton;
 import org.jboss.reddeer.swt.impl.button.PushButton;
@@ -56,7 +56,7 @@ public class NewProjectExamplesWizardDialogCentral extends WizardDialog {
 		Button button = new FinishButton();
 		button.click();
 
-		new WaitWhile(new ShellWithTextIsActive(shellText), TimePeriod.LONG);
+		new WaitWhile(new ShellIsActive(shellText), TimePeriod.LONG);
 		new WaitWhile(new JobIsRunning(), TimePeriod.VERY_LONG);
 		new DefaultShell("New Project Example");
 		CheckBox quickFix = new CheckBox("Show the Quick Fix dialog");
@@ -78,7 +78,7 @@ public class NewProjectExamplesWizardDialogCentral extends WizardDialog {
 		assertTrue(new CheckBox("Do not show this page again").isEnabled());
 		assertFalse(new CheckBox("Do not show this page again").isChecked());
 		new PushButton("Finish").click();
-		new WaitWhile(new ShellWithTextIsActive("New Project Example"));
+		new WaitWhile(new ShellIsActive("New Project Example"));
 		new WaitWhile(new JobIsRunning(), TimePeriod.VERY_LONG);
 	}
 	
@@ -97,7 +97,7 @@ public class NewProjectExamplesWizardDialogCentral extends WizardDialog {
 		}
 
 		public void hover() {
-			WidgetHandler.getInstance().notify(SWT.MouseEnter, getSWTWidget());
+			WidgetHandler.getInstance().notifyWidget(SWT.MouseEnter, getSWTWidget());
 		}
 	}
 	
