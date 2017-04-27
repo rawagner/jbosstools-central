@@ -13,7 +13,7 @@ package org.jboss.tools.maven.reddeer.preferences;
 import org.jboss.reddeer.common.logging.Logger;
 import org.jboss.reddeer.swt.api.Button;
 import org.jboss.reddeer.swt.api.Text;
-import org.jboss.reddeer.core.condition.JobIsRunning;
+import org.jboss.reddeer.workbench.core.condition.JobIsRunning;
 import org.jboss.reddeer.jface.preference.PreferencePage;
 import org.jboss.reddeer.swt.exception.SWTLayerException;
 import org.jboss.reddeer.swt.impl.button.PushButton;
@@ -24,6 +24,7 @@ import org.jboss.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
 import org.jboss.reddeer.common.wait.TimePeriod;
 import org.jboss.reddeer.common.wait.WaitUntil;
 import org.jboss.reddeer.common.wait.WaitWhile;
+import org.jboss.reddeer.core.exception.CoreLayerException;
 
 public class MavenUserPreferencePage extends PreferencePage{
 	
@@ -49,10 +50,10 @@ public class MavenUserPreferencePage extends PreferencePage{
 	            new DefaultShell("Update project required");
 	            new PushButton("Yes").click();
 	            new DefaultShell("Preferences");
-	        } catch(SWTLayerException ex){
+	        } catch(CoreLayerException ex){
 	            log.debug("'Update project required' shell not found.");
 	        } finally {
-	            new WaitUntil(new JobIsRunning(),TimePeriod.NORMAL,false);
+	            new WaitUntil(new JobIsRunning(),TimePeriod.DEFAULT,false);
 	            new WaitWhile(new JobIsRunning(),TimePeriod.VERY_LONG);
 	        }
 		}
@@ -80,7 +81,7 @@ public class MavenUserPreferencePage extends PreferencePage{
 		    new PushButton("Yes").click();
 		    new DefaultShell("Preferences");
 		    new WaitWhile(new JobIsRunning(),TimePeriod.VERY_LONG);
-		} catch(SWTLayerException ex){
+		} catch(CoreLayerException ex){
 			log.info("Update project required shell was not found.");
 		}
 	}

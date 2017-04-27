@@ -10,12 +10,10 @@
  ******************************************************************************/
 package org.jboss.tools.maven.reddeer.wizards;
 
-import org.jboss.reddeer.core.condition.JobIsRunning;
-import org.jboss.reddeer.core.condition.ShellWithTextIsActive;
-
 import java.util.List;
 
 import org.jboss.reddeer.common.exception.WaitTimeoutExpiredException;
+import org.jboss.reddeer.swt.condition.ShellIsActive;
 import org.jboss.reddeer.swt.impl.button.CheckBox;
 import org.jboss.reddeer.swt.impl.button.PushButton;
 import org.jboss.reddeer.swt.impl.combo.DefaultCombo;
@@ -125,7 +123,7 @@ public class ConfigureMavenRepositoriesWizard {
 		new DefaultShell("Maven Repositories");
 		new PushButton("Finish").click();
 		try {
-			new WaitUntil(new ShellWithTextIsActive("Confirm File Update"), TimePeriod.NORMAL);
+			new WaitUntil(new ShellIsActive("Confirm File Update"), TimePeriod.DEFAULT);
 			new DefaultShell("Confirm File Update");
 			new PushButton("Yes").click();
 		} catch (WaitTimeoutExpiredException ex) {

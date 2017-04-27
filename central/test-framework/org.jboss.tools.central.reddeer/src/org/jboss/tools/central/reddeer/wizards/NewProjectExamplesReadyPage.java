@@ -10,11 +10,11 @@
  ******************************************************************************/
 package org.jboss.tools.central.reddeer.wizards;
 
-import org.jboss.reddeer.core.condition.JobIsRunning;
-import org.jboss.reddeer.core.condition.ShellWithTextIsActive;
+import org.jboss.reddeer.swt.condition.ShellIsActive;
 import org.jboss.reddeer.swt.impl.button.CheckBox;
 import org.jboss.reddeer.swt.impl.button.PushButton;
 import org.jboss.reddeer.swt.impl.shell.DefaultShell;
+import org.jboss.reddeer.workbench.core.condition.JobIsRunning;
 import org.jboss.reddeer.common.wait.TimePeriod;
 import org.jboss.reddeer.common.wait.WaitWhile;
 import org.jboss.tools.central.reddeer.projects.Project;
@@ -80,7 +80,7 @@ public class NewProjectExamplesReadyPage extends DefaultShell {
 	 */
 	public void finish() {
 		new PushButton("Finish").click();
-		new WaitWhile(new ShellWithTextIsActive("New Project Example"));
+		new WaitWhile(new ShellIsActive("New Project Example"));
 		new WaitWhile(new JobIsRunning(), TimePeriod.VERY_LONG);
 	}
 
