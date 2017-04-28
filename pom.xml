@@ -65,6 +65,11 @@
 			<layout>p2</layout>
 			<url>http://download.jboss.org/jbosstools/updates/requirements/thym/0.3.0-SNAPSHOT-201504101636</url>
 		</repository>
+		<repository>
+			<id>reddeer</id>
+			<layout>p2</layout>
+			<url>http://download.jboss.org/jbosstools/neon/snapshots/builds/reddeer_master/</url>
+		</repository>
 	</repositories>
 
 	<build>
