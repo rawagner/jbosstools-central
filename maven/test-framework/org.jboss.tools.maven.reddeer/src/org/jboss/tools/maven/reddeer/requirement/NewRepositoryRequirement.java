@@ -17,62 +17,39 @@ import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.reddeer.junit.requirement.Requirement;
-import org.eclipse.reddeer.requirements.property.PropertyConfiguration;
+import org.eclipse.reddeer.junit.requirement.ConfigurableRequirement;
 import org.eclipse.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
 import org.jboss.tools.maven.reddeer.maven.ui.preferences.ConfiguratorPreferencePage;
-import org.jboss.tools.maven.reddeer.requirement.NewRepositoryRequirement.DefineMavenRepository;
+import org.jboss.tools.maven.reddeer.requirement.NewRepositoryRequirement.MavenRepository;
 import org.jboss.tools.maven.reddeer.wizards.ConfigureMavenRepositoriesWizard;
 
-public class NewRepositoryRequirement extends PropertyConfiguration implements Requirement<DefineMavenRepository> {
+public class NewRepositoryRequirement implements ConfigurableRequirement<RepositoryConfiguration, MavenRepository> {
 	
-	private DefineMavenRepository repo;
+	private MavenRepository repo;
 	private List<String> repositoriesToDelete;
-	private String url;
-	
-	public @interface MavenRepository {
-		  String url();
-		  String ID();
-		  boolean snapshots();
-	}
-	
-	public @interface PredefinedMavenRepository {
-		  String ID();
-		  boolean snapshots();
-	}
-	
-	public @interface PropertyDefinedMavenRepository {
-		String ID();
-		boolean snapshots();
-	}
-	
+	private RepositoryConfiguration config;
 	
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.TYPE)
-	public @interface DefineMavenRepository{
-		MavenRepository[] newRepositories() default {};
-		PredefinedMavenRepository[] predefinedRepositories() default {};
-		PropertyDefinedMavenRepository[] propDefMavenRepo() default {};
+	public @interface MavenRepository{
 	}
 
 	@Override
 	public void fulfill() {
 		repositoriesToDelete = new ArrayList<String>();
 		ConfigureMavenRepositoriesWizard mr = openRepositoriesWizard();
-		for(MavenRepository r: repo.newRepositories()){
-			repositoriesToDelete.add(mr.addRepository(r.ID(), r.url(), true,r.snapshots()));
-		}
-		for(PredefinedMavenRepository pr: repo.predefinedRepositories()){
-			repositoriesToDelete.add(mr.chooseRepositoryFromList(pr.ID(), true, pr.snapshots()));
-		}
-		if (repo.propDefMavenRepo().length>0){
-			repositoriesToDelete.add(mr.addRepository(repo.propDefMavenRepo()[0].ID(), url, true, repo.propDefMavenRepo()[0].snapshots()));
+		for(Repository r: config.getRepositories()) {
+			if(r.getUrl() == null) {
+				repositoriesToDelete.add(mr.chooseRepositoryFromList(r.getRepositoryId(), true, r.isSnapshots()));
+			} else {
+				repositoriesToDelete.add(mr.addRepository(r.getRepositoryId(), r.getUrl(), true,r.isSnapshots()));
+			}
 		}
 		closeRepositoriesWizard();
 	}
 
 	@Override
-	public void setDeclaration(org.jboss.tools.maven.reddeer.requirement.NewRepositoryRequirement.DefineMavenRepository declaration) {
+	public void setDeclaration(org.jboss.tools.maven.reddeer.requirement.NewRepositoryRequirement.MavenRepository declaration) {
 		this.repo = declaration;
 	}
 
@@ -83,10 +60,6 @@ public class NewRepositoryRequirement extends PropertyConfiguration implements R
 			mr.removeRepo(r);
 		}
 		closeRepositoriesWizard();
-	}
-	
-	public void setUrl(String url) {
-		this.url = url;
 	}
 	
 	private ConfigureMavenRepositoriesWizard openRepositoriesWizard(){
@@ -104,8 +77,24 @@ public class NewRepositoryRequirement extends PropertyConfiguration implements R
 	}
 
 	@Override
-	public DefineMavenRepository getDeclaration() {
+	public MavenRepository getDeclaration() {
 		return this.repo;
+	}
+
+	@Override
+	public Class<RepositoryConfiguration> getConfigurationClass() {
+		return RepositoryConfiguration.class;
+	}
+
+	@Override
+	public void setConfiguration(RepositoryConfiguration configuration) {
+		this.config = configuration;
+		
+	}
+
+	@Override
+	public RepositoryConfiguration getConfiguration() {
+		return config;
 	}
 	
 	
